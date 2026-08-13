@@ -32,5 +32,10 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="OPENAI_API_KEY" value="test-openai-key"/>
+        <env name="FILESYSTEM_DISK" value="local"/>
+        <env name="FACE_RECOGNITION_DRIVER" value="fake"/>
+        <env name="FACE_RECOGNITION_THRESHOLD" value="80"/>
+        <env name="BROADCAST_CONNECTION" value="null"/>
     </php>
 </phpunit>

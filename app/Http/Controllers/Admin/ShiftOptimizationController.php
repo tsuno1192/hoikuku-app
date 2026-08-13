@@ -49,7 +49,9 @@ class ShiftOptimizationController extends Controller
                 ->with('success', $result['message']);
 
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => '自動割り当て中にエラーが発生しました: ' . $e->getMessage()]);
+            report($e);
+
+            return back()->withErrors(['error' => '自動割り当て中にエラーが発生しました。']);
         }
     }
 }

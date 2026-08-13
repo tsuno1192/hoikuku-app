@@ -1,59 +1,162 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# hoikuku-app
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+保育施設向けの業務支援 Web アプリケーションです。  
+保護者・保育士・管理者・相談員のロールに応じて、シフト管理、支援記録、相談・問い合わせ、ドキュメンテーションなどを提供します。
 
-## About Laravel
+## 技術スタック
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| 項目 | 内容 |
+|------|------|
+| フレームワーク | Laravel 13 / PHP 8.3 |
+| 認証 | Laravel Breeze（Blade） |
+| フロント | Blade / Alpine.js / Tailwind CSS / Vite |
+| API 認証 | Laravel Sanctum |
+| AI | OpenAI（`openai-php/laravel`） |
+| DB（ローカル既定） | SQLite |
+| DB（Docker） | MySQL 8 |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ロール
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| ロール | 説明 |
+|--------|------|
+| `admin` | 管理者 |
+| `staff` | 保育士・スタッフ |
+| `parent` | 保護者 |
+| `counselor` | 相談員 |
 
-## Learning Laravel
+権限は `EnsureUserHasRole` ミドルウェアで制御します。
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 主な機能
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### シフト管理（管理者・スタッフ）
 
-## Laravel Sponsors
+- シフトマトリックスの表示
+- 希望休・出勤希望・時間指定を考慮した自動最適化
+- スキル要件・公平性・連続勤務上限（6日）を考慮
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 支援ダッシュボード（スタッフ・管理者・保護者）
 
-### Premium Partners
+- 児童一覧・個別支援計画の閲覧
+- 日々の支援ログ（申し送り）の記録（スタッフのみ）
+- 保護者は自分の児童のみ閲覧可能
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 相談・問い合わせ（保護者 ↔ 施設）
 
-## Contributing
+- 保護者からの相談チケット送信
+- AI によるメッセージのマイルド化（`AITextTransformer`）
+- 問い合わせへの AI 一次回答・言い換え・感情フラグ記録
+- スタッフ／相談員向け相談受信ボックス
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### ドキュメンテーション
 
-## Code of Conduct
+- スタッフが児童写真をアップロード
+- GPT Vision でモンテッソーリ／レッジョ・エミリアの観点に基づく保護者向け文章を生成
+- 写真はローカルの非公開ディスクに保存
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 認証・プロフィール
 
-## Security Vulnerabilities
+- ログイン / 登録 / パスワード再設定 / メール確認
+- プロフィール編集・削除
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## セットアップ
 
-## License
+### 1. 依存関係のインストール
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+composer install
+npm install
+```
+
+### 2. 環境変数
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+必要に応じて `.env` を編集してください。
+
+| 変数 | 用途 |
+|------|------|
+| `OPENAI_API_KEY` | OpenAI API キー（相談マイルド化・問い合わせ・ドキュメンテーションで使用） |
+| `DB_*` | データベース接続（既定は SQLite） |
+
+### 3. マイグレーション
+
+```bash
+php artisan migrate
+```
+
+### 4. フロントエンドビルド
+
+```bash
+npm run build
+# 開発時は
+npm run dev
+```
+
+### 5. 起動
+
+```bash
+php artisan serve
+```
+
+または Composer の開発スクリプト:
+
+```bash
+composer run dev
+```
+
+（サーバー / キュー / ログ / Vite を同時起動）
+
+## Docker
+
+```bash
+docker compose up -d --build
+```
+
+| サービス | 内容 |
+|----------|------|
+| `app` | Apache、ポート `8080` |
+| `db` | MySQL 8、ポート `3306` |
+
+アプリ: http://localhost:8080
+
+## 主な画面・ルート
+
+| 画面 | ルート名 | 対象ロール |
+|------|----------|------------|
+| ダッシュボード | `dashboard` | 認証ユーザー |
+| シフトマトリックス | `admin.shifts.matrix` | staff / admin |
+| シフト自動最適化 | `admin.shifts.optimize` | staff / admin |
+| 相談受信ボックス | `admin.consultations.index` | staff / admin / counselor |
+| 支援ダッシュボード | `support.index` | staff / admin / parent |
+| ドキュメンテーション | `documentations.index` | staff / admin / parent / counselor |
+| 相談・問合せ作成 | `consultations.create` | parent |
+
+## API（Sanctum）
+
+| メソッド | パス | 内容 |
+|----------|------|------|
+| POST | `/api/shifts/optimize` | シフト最適化（staff / admin） |
+| GET/POST | `/api/consultations` | 相談一覧・作成 |
+| POST | `/api/consultations/{id}/messages` | メッセージ送信 |
+| PATCH | `/api/consultations/{id}/status` | ステータス更新 |
+
+## ディレクトリの目安
+
+```
+app/
+  Http/Controllers/   # Web・API・Admin コントローラ
+  Models/             # User, Child, Shift, Documentation など
+  Services/           # ShiftOptimizerService, AITextTransformer
+  Policies/           # DocumentationPolicy など
+resources/views/      # Blade テンプレート
+routes/web.php        # Web ルート
+routes/api.php        # API ルート
+database/migrations/  # DB スキーマ
+```
+
+## ライセンス
+
+MIT

@@ -34,9 +34,16 @@ class ShiftMatrixController extends Controller
         }
 
         // 2. スタッフ一覧を取得（スキルや所属情報も一緒にEager Loading）
-        $staffs = User::with(['skills', 'shifts' => function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('target_date', [$startDate, $endDate]);
-        }])->get();
+        $staffs = User::query()
+            ->whereIn('role', ['staff', 'admin'])
+            ->with([
+                'skills',
+                'shifts' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('target_date', [$startDate, $endDate]);
+                },
+            ])
+            ->orderBy('name')
+            ->get();
 
         // 3. 選択肢として使うシフトパターン一覧を取得
         $shiftPatterns = ShiftPattern::with('requiredSkills')->get();

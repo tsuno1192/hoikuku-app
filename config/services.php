@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    'todo' => [
+        'base_url' => env('TODO_APP_URL', 'http://host.docker.internal:8001'),
+        'token' => env('TODO_API_TOKEN'),
+        'timeout' => (int) env('TODO_API_TIMEOUT', 10),
+    ],
+
+    /*
+    | IoT午睡センサー連携用 Bearer トークン（16文字以上）
+    */
+    'iot_sensor_token' => env('IOT_SENSOR_TOKEN'),
+
 ];

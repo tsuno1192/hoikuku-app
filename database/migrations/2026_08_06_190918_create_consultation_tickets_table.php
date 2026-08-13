@@ -12,15 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('consultation_tickets', function (Blueprint $table) {
-            Schema::create('consultation_tickets', function (Blueprint $table) {
-                $table->id();
+                            $table->id();
                 $table->foreignId('user_id')->constrained()->cascadeOnDelete();
                 $table->foreignId('staff_id')->nullable()->constrained('users')->nullOnDelete();
                 $table->string('title');
                 $table->string('status')->default('open');
                 $table->string('category')->nullable();
                 $table->timestamps();
-            });
+            
         });
     }
 

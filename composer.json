@@ -9,7 +9,11 @@
         "php": "^8.3",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^3.0.0"
+        "laravel/tinker": "^3.0.0",
+        "openai-php/laravel": "^0.20.0"
+    },
+    "suggest": {
+        "aws/aws-sdk-php": "Required when FACE_RECOGNITION_DRIVER=aws (Amazon Rekognition)."
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
