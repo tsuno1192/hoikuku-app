@@ -8,12 +8,11 @@
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
-
-        <!-- 【追加】チャイルドID -->
+        <!-- 個人IDの入力フィールドの例：このフィールドは必須です。 -->
         <div class="mt-4">
-            <x-input-label for="child_id" :value="__('チャイルドID（園から指定されたID）')" />
-            <x-text-input id="child_id" class="block mt-1 w-full" type="text" name="child_id" :value="old('child_id')" required min="1" />
-            <x-input-error :messages="$errors->get('child_id')" class="mt-2" />
+            <x-input-label for="staff_id" :value="__('スタッフID')" />
+            <x-text-input id="staff_id" class="block mt-1 w-full" type="text" name="staff_id" :value="old('staff_id')" required autofocus autocomplete="staff_id" />
+            <x-input-error :messages="$errors->get('staff_id')" class="mt-2" />
         </div>
 
         <!-- Email Address -->

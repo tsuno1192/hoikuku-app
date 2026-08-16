@@ -17,6 +17,8 @@ use App\Http\Controllers\ContactNoteController;
 use App\Http\Controllers\DailyAttendanceController;
 use App\Http\Controllers\GrowthAlbumController;
 use App\Http\Controllers\NapCheckController;
+use App\Http\Controllers\Admin\StaffRegisteredUserController;
+use App\Http\Controllers\Admin\StaffController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -119,4 +121,17 @@ Route::middleware(['auth', 'verified', 'role:staff,admin', 'throttle:60,1'])->gr
     Route::post('/allergies/check', [AllergyController::class, 'checkServing'])->name('allergies.check');
 });
 
-require __DIR__.'/auth.php';
+Route::middleware(['auth', 'verified'])->group(function () {
+    // 管理者のみがアクセスできるスタッフ管理ルート
+    Route::get('admin/staff/register', [StaffRegisteredUserController::class, 'create'])
+        ->name('staff.register');
+
+    Route::post('admin/staff/register', [StaffRegisteredUserController::class, 'store'])
+        ->name('staff.store');
+    
+        // 管理者によるスタッフ追加機能
+    Route::get('admin/staff/register', [StaffController::class, 'create'])->name('staff.register');
+    Route::post('admin/staff/register', [StaffController::class, 'store']);
+});
+
+require __DIR__ . '/auth.php';
