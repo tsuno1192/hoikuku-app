@@ -27,5 +27,20 @@ class DatabaseSeeder extends Seeder
         $this->call([
             StaffSeeder::class,
         ]);
+
+        // SkillSeederを呼び出す
+        $this->call([
+            SkillSeeder::class,
+        ]);
+
+         // ChildSeederを呼び出す
+        $this->call([
+            ChildSeeder::class,
+        ]);
+
+        // ここに追加
+        $this->call([
+            ChildAllergySeeder::class,
+        ]);
     }
 }

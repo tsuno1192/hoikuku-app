@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ShiftPattern;
 use Illuminate\Http\Request;
+use App\Models\Skill;
 
 class ShiftPatternController extends Controller
 {
@@ -22,7 +23,11 @@ class ShiftPatternController extends Controller
      */
     public function create()
     {
-        return view('admin.shift_patterns.create');
+        // スキル（または資格）の一覧を取得
+        $skills = Skill::all();
+
+        // compact または with でビューに渡す
+        return view('admin.shift_patterns.create', compact('skills'));
     }
 
     /**
@@ -30,23 +35,41 @@ class ShiftPatternController extends Controller
      */
     public function store(Request $request)
     {
+        // 1. 送信データから「チェックが入っている（IDがある）もの」だけにフィルタリングする
+        $skillsInput = $request->input('skills', []);
+        $filteredSkills = [];
+
+        foreach ($skillsInput as $skill) {
+            // IDが存在するもの、またはチェックが入っているものだけを対象にする
+            if (!empty($skill['id'])) {
+                $filteredSkills[] = [
+                    'id' => $skill['id'],
+                    'required_count' => $skill['required_count'] ?? 1,
+                ];
+            }
+        }
+
+        // リクエストデータを整理したものに差し替える
+        $request->merge(['skills' => $filteredSkills]);
+
+        // 2. バリデーション
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-            'skills' => ['nullable', 'array'], // スキルIDの配列
-            'skills.*.id' => ['required_with:skills', 'exists:skills,id'],
-            'skills.*.required_count' => ['required_with:skills', 'integer', 'min:1'],
+            'start_time' => ['required'],
+            'end_time' => ['required'],
+            'skills' => ['nullable', 'array'],
+            'skills.*.id' => ['required', 'exists:skills,id'],
+            'skills.*.required_count' => ['required', 'integer', 'min:1'],
         ]);
 
-        // シフトパターンの作成
+        // 3. シフトパターンの作成
         $shiftPattern = ShiftPattern::create([
             'name' => $validated['name'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
         ]);
 
-        // スキルと必要人数を中間テーブルに同期（登録）
+        // 4. スキルの紐付け
         if (!empty($validated['skills'])) {
             $syncData = [];
             foreach ($validated['skills'] as $skill) {
@@ -58,7 +81,6 @@ class ShiftPatternController extends Controller
         return redirect()->route('admin.shift_patterns.index')
             ->with('success', 'シフトパターンを作成しました。');
     }
-
     /**
      * 編集フォームの表示
      */
@@ -72,36 +94,36 @@ class ShiftPatternController extends Controller
      */
     public function update(Request $request, ShiftPattern $shiftPattern)
     {
-       // 1. バリデーション（storeと同様）
-       $validated = $request->validate([
-        'name' => ['required', 'string', 'max:255'],
-        'start_time' => ['required', 'date_format:H:i'],
-        'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-        'skills' => ['nullable', 'array'],
-        'skills.*.id' => ['required_with:skills', 'exists:skills,id'],
-        'skills.*.required_count' => ['required_with:skills', 'integer', 'min:1'],
-    ]);
+        // 1. バリデーション（storeと同様）
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+            'skills' => ['nullable', 'array'],
+            'skills.*.id' => ['required_with:skills', 'exists:skills,id'],
+            'skills.*.required_count' => ['required_with:skills', 'integer', 'min:1'],
+        ]);
 
-    // 2. シフトパターン本体の基本情報を更新
-    $shiftPattern->update([
-        'name' => $validated['name'],
-        'start_time' => $validated['start_time'],
-        'end_time' => $validated['end_time'],
-    ]);
+        // 2. シフトパターン本体の基本情報を更新
+        $shiftPattern->update([
+            'name' => $validated['name'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+        ]);
 
-    // 3. 中間テーブルのスキルと必要人数を同期（更新）
-    $syncData = [];
-    if (!empty($validated['skills'])) {
-        foreach ($validated['skills'] as $skill) {
-            // ピボットカラム（required_count）と一緒にデータをまとめる
-            $syncData[$skill['id']] = ['required_count' => $skill['required_count']];
+        // 3. 中間テーブルのスキルと必要人数を同期（更新）
+        $syncData = [];
+        if (!empty($validated['skills'])) {
+            foreach ($validated['skills'] as $skill) {
+                // ピボットカラム（required_count）と一緒にデータをまとめる
+                $syncData[$skill['id']] = ['required_count' => $skill['required_count']];
+            }
         }
-    }
-    // sync() を使えば、既存の紐付けを一括で更新（チェックを外したものは削除され、新しいものは追加される）
-    $shiftPattern->skills()->sync($syncData);
+        // sync() を使えば、既存の紐付けを一括で更新（チェックを外したものは削除され、新しいものは追加される）
+        $shiftPattern->skills()->sync($syncData);
 
-    return redirect()->route('admin.shift_patterns.index')
-        ->with('success', 'シフトパターンを更新しました。');
+        return redirect()->route('admin.shift_patterns.index')
+            ->with('success', 'シフトパターンを更新しました。');
     }
 
     /**

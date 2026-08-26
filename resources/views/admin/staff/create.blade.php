@@ -9,7 +9,7 @@
         <div class="max-w-lg mx-auto sm:px-6 lg:px-8"> 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-8">
                 
-                <form method="POST" action="{{ route('staff.register') }}">
+                <form method="POST" action="{{ route('admin.staff.register') }}">
                     @csrf
 
                     <!-- Staff ID (追加) -->

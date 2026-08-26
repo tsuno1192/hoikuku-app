@@ -17,8 +17,12 @@ use App\Http\Controllers\ContactNoteController;
 use App\Http\Controllers\DailyAttendanceController;
 use App\Http\Controllers\GrowthAlbumController;
 use App\Http\Controllers\NapCheckController;
-use App\Http\Controllers\Admin\StaffRegisteredUserController;
 use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\ShiftPatternController;
+use App\Http\Controllers\Admin\ShiftController;
+use App\Http\Controllers\StaffShiftSubmissionController;
+use App\Http\Controllers\ShiftPeriodController;
+use App\Http\Controllers\ChildController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,18 +36,39 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // 認証済みユーザー向けのルートグループ内などに追記
+    Route::get('/shifts/periods/create', [ShiftPeriodController::class, 'create'])->name('shifts.periods.create');
+    Route::post('/shifts/periods', [ShiftPeriodController::class, 'store'])->name('shifts.periods.store');
+   
+    // 認証済みのユーザー（スタッフ・管理者）がアクセスできる児童管理ルート
+    Route::resource('children', ChildController::class);
+
 });
 
 // 管理者・スタッフ向けシフト管理
 Route::middleware(['auth', 'verified', 'role:staff,admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/shifts/matrix', [ShiftMatrixController::class, 'index']);
 
+    // 2. 画面（View）を表示するルート ← ここに 'shifts.matrix' を綺麗に割り当てます
     Route::get('/shifts/matrix-view', function () {
         return view('admin.shifts.index');
     })->name('shifts.matrix');
 
     Route::get('/shifts/optimize', [AdminShiftOptimizationController::class, 'create'])->name('shifts.optimize');
     Route::post('/shifts/optimize', [AdminShiftOptimizationController::class, 'store'])->name('shifts.optimize.store');
+
+    // ▼ 【追加】スタッフごとの個別シフト登録ルート
+    Route::get('/shifts/create', [ShiftController::class, 'create'])->name('shifts.create');
+    Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
+
+
+    // ▼ 登録用のルート
+    Route::get('/staff/register', [StaffController::class, 'create'])->name('staff.register');
+    Route::post('/staff/register', [StaffController::class, 'store'])->name('staff.store');
+
+    Route::resource('shift_patterns', ShiftPatternController::class);
+
+
 
     // 顔認証レビュー・参照顔登録
     Route::get('/documentations/review', [DocumentationReviewController::class, 'index'])->name('documentations.review');
@@ -121,17 +146,34 @@ Route::middleware(['auth', 'verified', 'role:staff,admin', 'throttle:60,1'])->gr
     Route::post('/allergies/check', [AllergyController::class, 'checkServing'])->name('allergies.check');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+//認証済みスタッフのみがアクセスできるように、ルートを設定
+Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () {
+    // シフト希望入力画面
+    Route::get('/shifts/{shiftPeriod}/create', [StaffShiftSubmissionController::class, 'create'])->name('shifts.create');
+    // シフト希望保存処理
+    Route::post('/shifts/{shiftPeriod}', [StaffShiftSubmissionController::class, 'store'])->name('shifts.store');
+});
+
+Route::get('/admin/shifts/periods', [App\Http\Controllers\ShiftPeriodController::class, 'index'])
+    ->name('admin.shifts.periods.index');
+
+Route::get('/admin/shifts/periods/json', [App\Http\Controllers\ShiftPeriodController::class, 'getPeriodsJson'])
+    ->name('admin.shifts.periods.json');
+    
+
+
+// ❌ この部分は削除またはコメントアウトしてください
+/*Route::middleware(['auth', 'verified'])->group(function () {
     // 管理者のみがアクセスできるスタッフ管理ルート
-    Route::get('admin/staff/register', [StaffRegisteredUserController::class, 'create'])
+    Route::get('admin/staff/register', [StaffController::class, 'create'])
         ->name('staff.register');
 
-    Route::post('admin/staff/register', [StaffRegisteredUserController::class, 'store'])
+    Route::post('admin/staff/register', [StaffController::class, 'store'])
         ->name('staff.store');
     
         // 管理者によるスタッフ追加機能
     Route::get('admin/staff/register', [StaffController::class, 'create'])->name('staff.register');
     Route::post('admin/staff/register', [StaffController::class, 'store']);
 });
-
+*/
 require __DIR__ . '/auth.php';

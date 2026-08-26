@@ -31,4 +31,12 @@ class Shift extends Model
     {
         return $this->belongsTo(ShiftPattern::class);
     }
+
+    /**
+     * スタッフ（ユーザー）とのリレーション
+     */
+    public function staff(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'staff_id');
+    }
 }

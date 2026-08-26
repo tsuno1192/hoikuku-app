@@ -23,7 +23,7 @@ class AllergyGuardService
             ->values();
 
         /** @var Collection<int, ChildAllergy> $allergies */
-        $allergies = $child->allergies()
+        $allergies = $child->allergyRecords()
             ->where('is_active', true)
             ->get(['id', 'allergen', 'severity']);
 

@@ -49,7 +49,7 @@
                     <div class="p-4 text-sm">
                         <div class="font-semibold">{{ $child->name }}</div>
                         <div class="text-gray-600">
-                            @forelse($child->allergies as $allergy)
+                            @forelse($child->allergyRecords as $allergy)
                                 <span class="inline-block mr-2">{{ $allergy->allergen }}（{{ $allergy->severity }}）</span>
                             @empty
                                 <span class="text-gray-400">登録なし</span>

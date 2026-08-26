@@ -11,8 +11,11 @@ class Child extends Model
     use HasFactory;
 
     protected $fillable = [
+        'child_id', // ★ ここを追加
         'name',
         'birth_date',
+        'allergies',          // ★ 追加
+        'daily_precautions',  // ★ 追加
         'diagnosis',
         'sensory_tendencies',
         'panic_response_steps',
@@ -63,7 +66,7 @@ class Child extends Model
         return $this->hasMany(CareLog::class);
     }
 
-    public function allergies(): HasMany
+    public function allergyRecords(): HasMany
     {
         return $this->hasMany(ChildAllergy::class);
     }

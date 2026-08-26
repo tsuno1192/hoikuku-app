@@ -16,7 +16,7 @@ class AllergyController extends Controller
         abort_unless($request->user()->isStaff(), 403);
 
         $children = ChildAccess::visibleChildrenQuery($request->user())
-            ->with(['allergies' => fn ($q) => $q->where('is_active', true)])
+            ->with(['allergyRecords' => fn ($q) => $q->where('is_active', true)])
             ->paginate(30);
 
         return view('care.allergies.index', compact('children'));

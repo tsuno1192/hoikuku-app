@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 
+
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -99,6 +100,5 @@ class User extends Authenticatable
     {
         return $this->isStaff() || $this->isCounselor();
     }
-
    
 }
