@@ -61,6 +61,9 @@ Route::middleware(['auth', 'verified', 'role:staff,admin'])->prefix('admin')->na
     Route::get('/shifts/create', [ShiftController::class, 'create'])->name('shifts.create');
     Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
 
+    // ▼ 【追加】園児（チャイルドID）の登録・管理用ルート
+    Route::get('/children/create', [ChildController::class, 'create'])->name('children.create');
+    Route::post('/children', [ChildController::class, 'store'])->name('children.store');
 
     // ▼ 登録用のルート
     Route::get('/staff/register', [StaffController::class, 'create'])->name('staff.register');
@@ -132,6 +135,8 @@ Route::middleware(['auth', 'verified', 'role:staff,admin,parent'])->group(functi
     Route::post('/attendance', [DailyAttendanceController::class, 'upsert'])->name('attendance.upsert');
     Route::get('/albums', [GrowthAlbumController::class, 'index'])->name('albums.index');
     Route::get('/care-logs', [CareLogController::class, 'index'])->name('care-logs.index');
+
+    Route::delete('/documentations/{id}', [DocumentationReviewController::class, 'destroy'])->name('documentations.destroy');
 });
 
 Route::middleware(['auth', 'verified', 'role:staff,admin', 'throttle:60,1'])->group(function () {

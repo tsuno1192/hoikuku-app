@@ -27,6 +27,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        
         // role / child_id は権限昇格防止のため mass assignment 対象外
     ];
 

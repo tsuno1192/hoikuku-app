@@ -119,6 +119,11 @@
                         <div class="font-bold text-blue-900">シフト提出期間一覧</div>
                         <div class="text-xs text-blue-700 mt-1">admin.shifts.periods.index</div>
                     </a>
+
+                    <a href="{{ route('admin.children.create') }}" class="block p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
+                        <div class="font-bold text-blue-900">児童の新規登録</div>
+                        <div class="text-xs text-blue-700 mt-1">admin.children.create</div>
+                    </a>
                 </div>
             </div>
 

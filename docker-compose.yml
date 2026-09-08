@@ -9,7 +9,7 @@ services:
     volumes:
       - .:/var/www/html
     ports:
-      - "8080:80"
+      - "8081:80"
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html/public
     depends_on:
@@ -24,7 +24,7 @@ services:
       MYSQL_USER: laravel
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
 

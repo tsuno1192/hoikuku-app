@@ -60,4 +60,22 @@ class DocumentationReviewController extends Controller
             ->route('admin.documentations.review')
             ->with('success', '児童IDを手動で紐付けました。');
     }
+    
+    public function destroy(Documentation $documentation): RedirectResponse
+    {
+        // 権限チェック（必要に応じて変更してください）
+        $this->authorize('delete', $documentation);
+
+        // 必要に応じてサーバー上の画像ファイルを削除
+        // if ($documentation->image_path) {
+        //     Storage::disk('public')->delete($documentation->image_path);
+        // }
+
+        // レコードを削除
+        $documentation->delete();
+
+        return redirect()
+            ->back()
+            ->with('success', '写真を削除しました。');
+    }
 }
